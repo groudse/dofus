@@ -48,7 +48,8 @@ const itemChecked = (req, res) => {
 
 
 const getRentabilite = async (req, res) => {
-    const historiquePrx = req.body;
+    let historiquePrx = req.body;
+    historiquePrx = JSON.parse(historiquePrx);
     const today = new Date();
     const fiveDaysAgo = new Date();
     fiveDaysAgo.setDate(today.getDate() - 4);
