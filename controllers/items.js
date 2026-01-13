@@ -78,17 +78,15 @@ const getRentabilite = async (req, res) => {
         )[0];
 
         const weightedUnitPrices = filteredList.map(item => {
-            const lots = [
-                {price: item.price_1, qty: 1},
-                {price: item.price_10, qty: 10},
-                {price: item.price_100, qty: 100},
-                {price: item.price_1000, qty: 1000},
-            ].filter(l => l.price && l.price > 0);
+            // prix unitaires par lot
+            const unitPrices = [
+                item.price_1,
+                item.price_10 ? item.price_10 / 10 : null,
+                item.price_100 ? item.price_100 / 100 : null,
+                item.price_1000 ? item.price_1000 / 1000 : null,
+            ].filter(p => p && p > 0); // ignore 0 ou null
 
-            const totalPrice = lots.reduce((sum, l) => sum + l.price, 0);
-            const totalQty = lots.reduce((sum, l) => sum + l.qty, 0);
-
-            return totalPrice / totalQty; // prix unitaire moyen pondéré
+            return unitPrices.reduce((sum, p) => sum + p, 0) / unitPrices.length;
         });
 
         const averagePrice = Math.ceil(
