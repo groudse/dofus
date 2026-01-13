@@ -1,10 +1,10 @@
-const express = require('express')
+import express from 'express';
 import cors from 'cors';
-const mongoose = require('mongoose')
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 const app = express()
-const items_routes = require('./routes/items-routes.js')
-
-require('dotenv').config()
+import items_routes from './routes/items-routes.js'
+dotenv.config();
 
 app.use(cors({
     origin: 'https://imagiro.laboubourse.com',
