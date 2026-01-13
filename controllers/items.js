@@ -83,7 +83,6 @@ const getRentabilite = async (req, res) => {
                 item.price_1,
                 item.price_10 ? item.price_10 / 10 : null,
                 item.price_100 ? item.price_100 / 100 : null,
-                item.price_1000 ? item.price_1000 / 1000 : null,
             ].filter(p => p && p > 0); // ignore 0 ou null
 
             return unitPrices.reduce((sum, p) => sum + p, 0) / unitPrices.length;
