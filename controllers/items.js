@@ -77,15 +77,24 @@ const getRentabilite = async (req, res) => {
             new Date(b.inserted_at) - new Date(a.inserted_at)
         )[0];
 
+        const unitPrices = filteredList.map(item => {
+            const prices = [
+                item.price_1,
+                item.price_10 ? item.price_10 / 10 : null,
+                item.price_100 ? item.price_100 / 100 : null,
+                item.price_1000 ? item.price_1000 / 1000 : null
+            ].filter(Boolean);
+            return prices.reduce((a, b) => a + b, 0) / prices.length;
+        });
+
+        // moyenne globale sur tous les items
+        const averagePrice = Math.ceil(unitPrices.reduce((a, b) => a + b, 0) / unitPrices.length);
 
 
-        const result = filteredList.reduce((sum, item) => sum + item.price_1, 0) /
-            filteredList.length;
-
-        if (itemRecent.price_1 < result * 0.80) {
+        if (itemRecent.price_1 < averagePrice * 0.80) {
             await fetch('https://ntfy.sh/dofusiteminfo', {
                 method: 'POST',
-                body: `Il faut acheter ${itemRecent.name} prix moyen : ${Math.ceil(result)}`
+                body: `Il faut acheter ${itemRecent.name} prix moyen : ${Math.ceil(result)}`,
             });
             await itemChecked(itemRecent.item_id);
             return res.status(200).json('cool')
