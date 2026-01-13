@@ -82,10 +82,29 @@ const getRentabilite = async (req, res) => {
 
 }
 
+const deleteItem = (req, res) => {
+    const idItem = req.params.id
+
+
+    Item.findOneAndDelete({id: idItem})
+        .then(updatedItem => {
+
+                return res.status(200).json({msg: `item ${idItem} deleted`})
+
+            res.status(200).json({result: updatedItem})
+        })
+        .catch(error => res.status(500).json({msg: error.message}))
+
+}
+
+
+
+
 
 module.exports = {
     getProducts,
     getRandomItem,
     itemChecked,
-    getRentabilite
+    getRentabilite,
+    deleteItem
 }
