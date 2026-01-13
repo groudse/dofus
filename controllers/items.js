@@ -53,6 +53,8 @@ const getRentabilite = async (req, res) => {
     try {
         let historiquePrx = JSON.parse(req.body);
 
+        console.log("body", req.body)
+        console.log("histo", historiquePrx)
         const fiveDaysAgo = new Date();
         fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 4);
 
