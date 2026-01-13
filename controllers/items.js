@@ -1,4 +1,6 @@
 const Item = require('../models/items.model.js')
+import pino from 'pino';
+const logger = pino();
 
 const getProducts = ((req, res) => {
     Item.find({})
@@ -30,6 +32,7 @@ const getRandomItem = async (req, res) => {
 }
 
 const itemChecked = async (itemId) => {
+    logger.info('checked item:', itemId)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
@@ -51,10 +54,12 @@ const itemChecked = async (itemId) => {
 
 const getRentabilite = async (req, res) => {
     try {
+
+        logger.info("body", req.body)
+        logger.info("histo", historiquePrx)
         let historiquePrx = JSON.parse(req.body);
 
-        console.log("body", req.body)
-        console.log("histo", historiquePrx)
+
         const fiveDaysAgo = new Date();
         fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 4);
 
