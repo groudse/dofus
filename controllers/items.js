@@ -65,7 +65,7 @@ const getRentabilite = async (req, res) => {
         fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 4);
 
         const filteredList = historiquePrx.filter(item =>
-            new Date(item.inserted_at) >= fiveDaysAgo
+            new Date(item.inserted_at) >= fiveDaysAgo && item.price_1 > 0
         );
 
         if (filteredList.length === 0) {
@@ -78,7 +78,7 @@ const getRentabilite = async (req, res) => {
         )[0];
 
         const result = filteredList.reduce((sum, item) => sum + item.price_1, 0) /
-            filteredList.length; // ✅ Corrigé
+            filteredList.length;
 
         if (itemRecent.price_1 < result * 0.85) {
             await fetch('https://ntfy.sh/dofusiteminfo', {
