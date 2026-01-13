@@ -10,7 +10,6 @@ router.get('/', getProducts)
 
 router.get('/random', getRandomItem)
 
-router.get('/checked', itemChecked)
 
 router.post('/renta', getRentabilite)
 

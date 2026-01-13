@@ -29,58 +29,62 @@ const getRandomItem = async (req, res) => {
     }
 }
 
-const itemChecked = (req, res) => {
-    const idQuery = req.query.id
-
+const itemChecked = async (itemId) => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    Item.findOneAndUpdate({id: idQuery}, {lastTimeChecked: today}, {new: true})
-        .then(updatedItem => {
-            if (!updatedItem) {
-                return res.status(404).json({msg: 'Item not found'})
-            }
-            res.status(200).json({result: updatedItem})
-        })
-        .catch(error => res.status(500).json({msg: error.message}))
-
+    try {
+        const updatedItem = await Item.findOneAndUpdate(
+            {id: itemId},
+            {lastTimeChecked: today},
+            {new: true}
+        )
+        if (!updatedItem) {
+            console.log('Item not found')
+        }
+        console.log('Item updated:', updatedItem)
+    } catch (error) {
+        console.error('Erreur mise à jour:', error)
+    }
 }
 
 
 const getRentabilite = async (req, res) => {
-    let historiquePrx = req.body;
-    historiquePrx = JSON.parse(historiquePrx);
-    const today = new Date();
-    const fiveDaysAgo = new Date();
-    fiveDaysAgo.setDate(today.getDate() - 4);
+    try {
+        let historiquePrx = JSON.parse(req.body);
 
-    const filteredList = historiquePrx.filter(item =>
-        new Date(item.inserted_at).getTime() >= today - fiveDaysAgo
-    );
+        const fiveDaysAgo = new Date();
+        fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 4);
 
+        const filteredList = historiquePrx.filter(item =>
+            new Date(item.inserted_at) >= fiveDaysAgo
+        );
 
-    const prixRecent = filteredList.sort((a, b) =>
-        new Date(b.inserted_at) - new Date(a.inserted_at)
-    )[0].price_1;
+        if (filteredList.length === 0) {
+            return res.status(200).json('Pas de données récentes')
+        }
 
+        const itemRecent = filteredList.sort((a, b) =>
+            new Date(b.inserted_at) - new Date(a.inserted_at)
+        )[0];
 
-    const result = filteredList.reduce((sum, item) => sum + item.price_1, 0) /
-        (historiquePrx.length || 1);
+        const result = filteredList.reduce((sum, item) => sum + item.price_1, 0) /
+            filteredList.length; // ✅ Corrigé
 
-
-    if (prixRecent < result) {
-        // send a post request to ntfy.sh
-        await fetch('https://ntfy.sh/dofusiteminfo', {
-            method: 'POST',
-            body: `Il faut acheter ${historiquePrx[0].name}`
-        });
-        res.status(200).json('cool')
-
-    } else {
-        res.status(200).json('trop nul')
+        if (itemRecent.price_1 < result) {
+            await fetch('https://ntfy.sh/dofusiteminfo', {
+                method: 'POST',
+                body: `Il faut acheter ${itemRecent.name}`
+            });
+            await itemChecked(itemRecent.item_id);
+            return res.status(200).json('cool')
+        } else {
+            await itemChecked(itemRecent.item_id);
+            return res.status(200).json('trop nul')
+        }
+    } catch (error) {
+        res.status(500).json({msg: error.message})
     }
-
-
 }
 
 const deleteItem = (req, res) => {
@@ -104,7 +108,6 @@ const deleteItem = (req, res) => {
 module.exports = {
     getProducts,
     getRandomItem,
-    itemChecked,
     getRentabilite,
     deleteItem
 }
