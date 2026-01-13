@@ -69,7 +69,7 @@ const getRentabilite = async (req, res) => {
         );
 
         if (filteredList.length === 0) {
-            await itemChecked(filteredList[0].item_id);
+            await itemChecked(historiquePrx[0].item_id);
             return res.status(200).json('Pas de données récentes')
         }
 
