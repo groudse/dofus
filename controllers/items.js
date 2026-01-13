@@ -94,7 +94,7 @@ const getRentabilite = async (req, res) => {
         if (itemRecent.price_1 < averagePrice * 0.80) {
             await fetch('https://ntfy.sh/dofusiteminfo', {
                 method: 'POST',
-                body: `Il faut acheter ${itemRecent.name} prix moyen : ${Math.ceil(result)}`,
+                body: `Il faut acheter ${itemRecent.name} prix moyen : ${Math.ceil(averagePrice)}`,
             });
             await itemChecked(itemRecent.item_id);
             return res.status(200).json('cool')
