@@ -1,5 +1,6 @@
-const Item = require('../models/items.model.js')
+import Item from '../models/items.model.js'
 import pino from 'pino';
+
 const logger = pino();
 
 const getProducts = ((req, res) => {
@@ -56,8 +57,8 @@ const getRentabilite = async (req, res) => {
     try {
 
         logger.info("body", req.body)
+        let historiquePrx =  req.body;
         logger.info("histo", historiquePrx)
-        let historiquePrx = JSON.parse(req.body);
 
 
         const fiveDaysAgo = new Date();
@@ -112,7 +113,7 @@ const deleteItem = (req, res) => {
 
 
 
-module.exports = {
+export {
     getProducts,
     getRandomItem,
     getRentabilite,
