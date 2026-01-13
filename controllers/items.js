@@ -69,6 +69,7 @@ const getRentabilite = async (req, res) => {
         );
 
         if (filteredList.length === 0) {
+            await itemChecked(itemRecent.item_id);
             return res.status(200).json('Pas de données récentes')
         }
 
@@ -79,7 +80,7 @@ const getRentabilite = async (req, res) => {
         const result = filteredList.reduce((sum, item) => sum + item.price_1, 0) /
             filteredList.length; // ✅ Corrigé
 
-        if (itemRecent.price_1 < result) {
+        if (itemRecent.price_1 < result * 0.85) {
             await fetch('https://ntfy.sh/dofusiteminfo', {
                 method: 'POST',
                 body: `Il faut acheter ${itemRecent.name}`
