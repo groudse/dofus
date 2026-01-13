@@ -85,17 +85,16 @@ const getRentabilite = async (req, res) => {
 const deleteItem = (req, res) => {
     const idItem = req.params.id
 
-
     Item.findOneAndDelete({id: idItem})
-        .then(updatedItem => {
-
-                return res.status(200).json({msg: `item ${idItem} deleted`})
-
-            res.status(200).json({result: updatedItem})
+        .then(deletedItem => {
+            if (!deletedItem) {
+                return res.status(404).json({msg: 'Item not found'})
+            }
+            res.status(200).json({msg: `item ${idItem} deleted`})
         })
         .catch(error => res.status(500).json({msg: error.message}))
-
 }
+
 
 
 
